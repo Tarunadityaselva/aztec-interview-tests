@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { Colour } from './block';
 import { BlockGrid } from './block_grid';
@@ -35,6 +35,15 @@ const StyledBlock = styled.div`
 `;
 
 function Blocky({ grid }: { grid: BlockGrid }) {
+  // Counter state to force re-renders after grid mutations
+  const [, setRenderCount] = useState(0);
+
+  function handleClick(x: number, y: number) {
+    grid.clicked(x, y);
+    // Bump the counter so React re-renders with the updated grid
+    setRenderCount(c => c + 1);
+  }
+
   return (
     <StyledGrid>
       {grid.grid.map((col, i) => (
@@ -42,8 +51,8 @@ function Blocky({ grid }: { grid: BlockGrid }) {
           {col.map((block, j) => (
             <StyledBlock
               key={j}
-              style={{ background: Colour[block.colour] }}
-              onClick={() => grid.clicked(i, j)}
+              style={{ background: block ? Colour[block.colour] : 'grey' }}
+              onClick={() => handleClick(i, j)}
             ></StyledBlock>
           ))}
         </StyledColumn>
